@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, MoonStar, Sun } from "lucide-react";
@@ -11,8 +12,13 @@ import { AppSidebar } from "@/components/app-sidebar";
 
 export function TopBar() {
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const isDashboard = pathname?.startsWith("/research") || pathname?.startsWith("/video");
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const toggleTheme = () => setTheme(theme === "dark" ? "light" : "dark");
 
@@ -41,7 +47,7 @@ export function TopBar() {
       </div>
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
-          {theme === "dark" ? <Sun className="h-4 w-4" /> : <MoonStar className="h-4 w-4" />}
+          {mounted && theme === "dark" ? <Sun className="h-4 w-4" /> : <MoonStar className="h-4 w-4" />}
         </Button>
         <Link href="/api/auth/signin" className="text-sm text-muted-foreground hover:text-foreground">
           Sign in
