@@ -26,7 +26,8 @@ export default function VideoProjectPage() {
   const statusQuery = useQuery({
     queryKey: ["video-status", jobId],
     queryFn: () => fetchVideoStatus(jobId),
-    refetchInterval: (query) => (query.state.data?.status === "done" ? false : 2500)
+    refetchInterval: (query) =>
+      (["done", "failed"].includes(query.state.data?.status || "") ? false : 2500)
   });
 
   useEffect(() => {
@@ -44,6 +45,8 @@ export default function VideoProjectPage() {
 
   const duration = segments.at(-1)?.end ?? 0;
 
+  const videoUrl = statusQuery.data?.thumbnails?.[0];
+
   return (
     <div className="space-y-6">
       <header className="flex flex-col gap-2">
@@ -57,7 +60,12 @@ export default function VideoProjectPage() {
             <CardDescription>Автосегментація + ручне редагування.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <VideoPlayer poster={statusQuery.data?.thumbnails?.[0]} />
+            {/* Pass the videoUrl to 'src' so it plays */}
+            <VideoPlayer
+              src={videoUrl}
+              poster="https://placehold.co/1920x1080/EEE/31343C?text=Video+Preview"
+            />
+
             <Timeline duration={duration} />
             <div className="flex flex-wrap items-center gap-2">
               <Button onClick={() => saveMutation.mutate()} disabled={saveMutation.isPending}>
